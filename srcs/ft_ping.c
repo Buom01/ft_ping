@@ -1,4 +1,5 @@
 #include "ft_ping.h"
+#include "ft_ping/request.h"
 
 static void ft_ping_stop()
 {
@@ -27,5 +28,6 @@ void ft_ping(const t_options *options)
 
   // while(true)
     // ;  // 64 octets de par10s22-in-x0e.1e100.net (2a00:1450:4007:80e::200e) : icmp_seq=1 ttl=116 temps=11.5 ms
-  (void)options;
+
+  request(options->target, 42, 1);
 }

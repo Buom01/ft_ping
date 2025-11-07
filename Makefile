@@ -3,7 +3,8 @@ NAME		:=	ft_ping
 RM			:=	rm -f
 
 SRCS		:=	srcs/main.c \
-			srcs/ft_ping.c
+			srcs/ft_ping.c \
+			srcs/request.c
 
 OBJS		:=	$(SRCS:.c=.o)
 CFLAGS		?=	-Wall -Werror -Wextra -g3
