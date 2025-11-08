@@ -58,7 +58,9 @@ int ping_request(t_options *options)
 
   ssize_t sent = sendto(options->sockfd, &packet, sizeof(packet), 0, (struct sockaddr*)&sockaddr, sizeof(sockaddr));
   if (sent < 0) {
-      printf("Send failed: %s\n", strerror(errno));
-      return 1;
+    printf("Send failed: %s\n", strerror(errno));
+    return 1;
   }
+
+  return 0;
 }

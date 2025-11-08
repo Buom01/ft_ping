@@ -1,6 +1,7 @@
 #include "ft_ping.h"
 #include "ft_ping/resolve.h"
 #include "ft_ping/request.h"
+#include "ft_ping/response.h"
 
 static void ft_ping_stop()
 {

@@ -1,5 +1,5 @@
 #include "ft_ping.h"
-#include "ft_ping/request.h"
+#include "ft_ping/response.h"
 #include "ft_ping/messages.h"
 
 

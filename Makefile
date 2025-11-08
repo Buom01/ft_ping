@@ -6,7 +6,8 @@ SRCS		:=	srcs/main.c \
 			srcs/messages.c \
 			srcs/ft_ping.c \
 			srcs/resolve.c \
-			srcs/request.c
+			srcs/request.c \
+			srcs/response.c
 
 OBJS		:=	$(SRCS:.c=.o)
 CFLAGS		?=	-Wall -Werror -Wextra -g3
