@@ -10,6 +10,6 @@
 # include <netinet/ip_icmp.h>
 # include <arpa/inet.h>
 
-void ping_request(t_options *options);
+int ping_request(t_options *options);
 
 #endif

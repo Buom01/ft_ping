@@ -21,6 +21,7 @@ typedef struct s_options
   char      *target;
   struct in_addr  addr;
   uint16_t  sequence;
+  int       sockfd;
 } t_options;
 
 typedef struct s_icmp_req
@@ -31,6 +32,14 @@ typedef struct s_icmp_req
   uint16_t	id;
   uint16_t	sequence;
 } t_icmp_req;
+
+typedef struct s_icmp_res
+{
+  uint8_t   type;
+  uint8_t   code;
+  uint16_t  checksum;
+  char      data[572];
+} t_icmp_res;
 
 void ft_ping(t_options *options);
 

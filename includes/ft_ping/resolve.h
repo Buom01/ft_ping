@@ -7,6 +7,6 @@
 # include <netinet/in.h>
 # include <arpa/inet.h>
 
-bool ping_resolve(t_options *options);
+int ping_resolve(t_options *options);
 
 #endif
