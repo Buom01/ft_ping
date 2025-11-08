@@ -7,12 +7,20 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <signal.h>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+
+# define BINARY "ft_ping"
+# define ICMP_ID 42
 
 typedef struct s_options
 {
   bool      verbose;
   bool      help;
   char      *target;
+  struct in_addr  addr;
+  uint16_t  sequence;
 } t_options;
 
 typedef struct s_icmp_req
@@ -24,6 +32,6 @@ typedef struct s_icmp_req
   uint16_t	sequence;
 } t_icmp_req;
 
-void ft_ping(const t_options *options);
+void ft_ping(t_options *options);
 
 #endif

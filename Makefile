@@ -3,7 +3,9 @@ NAME		:=	ft_ping
 RM			:=	rm -f
 
 SRCS		:=	srcs/main.c \
+			srcs/messages.c \
 			srcs/ft_ping.c \
+			srcs/resolve.c \
 			srcs/request.c
 
 OBJS		:=	$(SRCS:.c=.o)

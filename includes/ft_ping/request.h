@@ -2,6 +2,7 @@
 # define FT_PING_REQUEST_H
 
 # include "types.h"
+# include "ft_ping.h"
 # include <sys/time.h>
 # include <sys/socket.h>
 # include <netinet/in.h>
@@ -9,6 +10,6 @@
 # include <netinet/ip_icmp.h>
 # include <arpa/inet.h>
 
-void request(const char *cp, uint16_t id, uint16_t seq);
+void ping_request(t_options *options);
 
 #endif

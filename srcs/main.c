@@ -1,22 +1,9 @@
 #include "ft_ping.h"
-
-static int print_usage()
-{
-  printf("\n");
-  printf("Usage\n");
-  printf("  ft_ping [options] <destination>\n");
-  printf("\n");
-  printf("Options :\n");
-  printf("  <destination>      DNS name or IP address\n");
-  printf("  -v                 verbose output\n");
-  printf("  -?                 show this help\n");
-
-  return 0;
-}
+#include "ft_ping/messages.h"
 
 int main(int argc, char **argv)
 {
-  t_options options = {false, false, NULL};
+  t_options options = {0};
 
   for (int i = 1; i < argc; ++i)
   {
@@ -30,6 +17,9 @@ int main(int argc, char **argv)
 
   if (options.help)
     return print_usage();
+
+  if (!options.target)
+    return print_usage_error("Destination address required");
 
   ft_ping(&options);
 

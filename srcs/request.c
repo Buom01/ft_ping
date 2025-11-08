@@ -1,5 +1,6 @@
 #include "ft_ping.h"
 #include "ft_ping/request.h"
+#include "ft_ping/messages.h"
 
 // Adapted from https://datatracker.ietf.org/doc/html/rfc1071#section-4.1
 static uint16_t checksum(void *buff, size_t len)
@@ -26,13 +27,13 @@ static uint16_t checksum(void *buff, size_t len)
   return (~sum);
 }
 
-static t_icmp_req icmp_packet(uint16_t id, uint16_t seq)
+static t_icmp_req icmp_packet(const uint16_t seq)
 {
   t_icmp_req packet = {
     8,
     0,
     0,
-    htons(id),
+    htons(ICMP_ID),
     htons(seq)
   };
   packet.checksum = checksum(&packet, sizeof(packet));
@@ -41,22 +42,12 @@ static t_icmp_req icmp_packet(uint16_t id, uint16_t seq)
 }
 
 // manual used: socket, imcp(7), raw(7), ip(7), bind(2)
-void request(const char *cp, uint16_t id, uint16_t seq)
+void ping_request(t_options *options)
 {
-  struct in_addr addr;
-
-  printf("Using host %s\n", cp);
- 
-  if (!inet_aton(cp, &addr))
-  {
-    printf("Bad host %s\n", cp);
-    return;
-  }
-
   struct sockaddr_in sockaddr;
   bzero(&sockaddr, sizeof(sockaddr));
   sockaddr.sin_family = AF_INET;
-  sockaddr.sin_addr = addr;
+  sockaddr.sin_addr = options->addr;
 
   int sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
   if (sockfd < 0)
@@ -64,7 +55,7 @@ void request(const char *cp, uint16_t id, uint16_t seq)
     printf("Socket creation failed: %s\n", strerror(errno));
     return;
   }
-  t_icmp_req packet = icmp_packet(id, seq);
+  t_icmp_req packet = icmp_packet(options->sequence++);
 
   ssize_t sent = sendto(sockfd, &packet, sizeof(packet), 0, (struct sockaddr*)&sockaddr, sizeof(sockaddr));
   if (sent < 0) {
