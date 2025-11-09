@@ -18,6 +18,7 @@ rtt min/avg/max/mdev = 0.009/0.022/0.057/0.014 ms
 
   // inutils2-ping is buggy on the total time elapsed
   // https://github.com/iputils/iputils/issues/193#issuecomment-508861630
+  // Also : https://serverfault.com/questions/999595/what-does-the-time-field-indicate-in-ping-statistics
   printf("\n");
   printf("--- %s ping statistics ---\n", g_options.target);
   printf("%i packets transmitted, %i received, %0.f%% packet loss, time %.0fms\n", g_options.ping, g_options.pong, loss, get_time_diff(g_options.start_time, g_options.response_time));
