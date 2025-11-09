@@ -4,5 +4,8 @@
 # include <string.h>
 # include <stdbool.h>
 # include <stdint.h>
+# include <sys/time.h>
+
+typedef struct timeval t_timeval;
 
 #endif

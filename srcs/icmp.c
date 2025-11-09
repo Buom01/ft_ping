@@ -1,4 +1,6 @@
 #include "ft_ping.h"
+#include "ft_ping/types.h"
+#include "ft_ping/utils.h"
 #include "ft_ping/icmp.h"
 #include "ft_ping/messages.h"
 
@@ -57,7 +59,7 @@ int ping_request()
 
   t_icmp_req packet = get_ping_request();
 
-  gettimeofday(&g_options.send_time, NULL);
+  g_options.send_time = get_time();
 
   ssize_t sent = sendto(g_options.sockfd, &packet, sizeof(packet), 0, (struct sockaddr*)&sockaddr, sizeof(sockaddr));
   if (sent < 0) {
@@ -71,7 +73,7 @@ int ping_request()
 
 int ping_handle_response()
 {
-  struct timeval tv_timeout;
+  t_timeval tv_timeout;
   tv_timeout.tv_sec = 1;
   tv_timeout.tv_usec = 0;
 
@@ -104,12 +106,7 @@ int ping_handle_response()
     return -1;
   }
 
-  struct timeval recv_time;
-  gettimeofday(&recv_time, NULL);
-
-  unsigned long usec_diff = (recv_time.tv_sec - g_options.send_time.tv_sec) * 1000000 + (recv_time.tv_usec - g_options.send_time.tv_usec);
-  g_options.rtt = usec_diff / 1000.0;
-
+  g_options.rtt = get_time_diff(g_options.send_time, get_time());
   g_options.pong++;
 
   return 0;

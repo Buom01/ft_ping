@@ -3,6 +3,7 @@ NAME		:=	ft_ping
 RM			:=	rm -f
 
 SRCS		:=	srcs/main.c \
+			srcs/utils.c \
 			srcs/messages.c \
 			srcs/resolve.c \
 			srcs/icmp.c
