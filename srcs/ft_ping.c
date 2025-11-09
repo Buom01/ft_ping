@@ -29,7 +29,16 @@ void ft_ping(t_options *options)
   if (ping_resolve(options))
     return ;
 
-  // @TODO: Handle errors
-  ping_request(options);
-  ping_response(options);
+  printf("PING %s (%s) %i(%i) bytes of data.\n", options->target, inet_ntoa(options->addr), 56, 84);
+  options->id = getpid();
+
+  int res = 0;
+  while (res == 0)
+  {
+    ping_request(options);
+    while ((res = ping_response(options)) == 1)
+      ;
+    if (res == 0)
+      sleep(1);
+  }
 }

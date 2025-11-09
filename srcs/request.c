@@ -27,14 +27,14 @@ static uint16_t checksum(void *buff, size_t len)
   return (~sum);
 }
 
-static t_icmp_req icmp_request_packet(const uint16_t seq)
+static t_icmp_req icmp_request_packet(t_options *options)
 {
   t_icmp_req packet = {
     8,
     0,
     0,
-    htons(ICMP_ID),
-    htons(seq)
+    htons(options->id),
+    htons(options->sequence++)
   };
   packet.checksum = checksum(&packet, sizeof(packet));
 
@@ -54,7 +54,10 @@ int ping_request(t_options *options)
     printf("Socket creation failed: %s\n", strerror(errno));
     return 1;
   }
-  t_icmp_req packet = icmp_request_packet(options->sequence++);
+
+  t_icmp_req packet = icmp_request_packet(options);
+
+  gettimeofday(&options->ping_time, NULL);
 
   ssize_t sent = sendto(options->sockfd, &packet, sizeof(packet), 0, (struct sockaddr*)&sockaddr, sizeof(sockaddr));
   if (sent < 0) {
