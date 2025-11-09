@@ -4,10 +4,8 @@ RM			:=	rm -f
 
 SRCS		:=	srcs/main.c \
 			srcs/messages.c \
-			srcs/ft_ping.c \
 			srcs/resolve.c \
-			srcs/request.c \
-			srcs/response.c
+			srcs/icmp.c
 
 OBJS		:=	$(SRCS:.c=.o)
 CFLAGS		?=	-Wall -Werror -Wextra -g3

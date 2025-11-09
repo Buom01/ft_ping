@@ -28,3 +28,27 @@ int print_usage_error(const char *reason)
 
   return 0;
 }
+
+void print_req_result()
+{
+  const char *format;
+  float msec = g_options.rtt;
+
+  if (msec < 0.1)
+      format = "%.3f";
+  else if (msec < 1)
+      format = "%.2f";
+  else if (msec < 10)
+      format = "%.1f";
+  else
+      format = "%.0f";
+
+  printf(
+    "%d bytes from %s: icmp_seq=%d ttl=64 time=",
+    64,  // FIXME: Hardcoded size
+    inet_ntoa(g_options.addr),
+    g_options.sequence
+  );
+  printf(format, msec);
+  printf(" ms\n");
+}

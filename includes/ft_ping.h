@@ -53,6 +53,4 @@ typedef struct s_icmp_res
   char      data[568];
 } t_icmp_res;
 
-void ft_ping(void);
-
 #endif
