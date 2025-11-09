@@ -22,6 +22,8 @@ typedef struct s_options
   struct in_addr  addr;
   uint16_t  sequence;
   int       sockfd;
+  int       ping;
+  int       pong;
 } t_options;
 
 typedef struct s_icmp_req

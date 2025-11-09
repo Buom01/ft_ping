@@ -26,5 +26,15 @@ int ping_response(t_options *options)
     return 1;
   }
 
+  if (packet.type == 0)
+  {
+    printf("Response OK\n");
+    options->pong++;
+  }
+  else
+  {
+    printf("Other type %i with code %i\n", packet.type, packet.type);
+  }
+
   return 0;
 }

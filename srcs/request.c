@@ -61,6 +61,7 @@ int ping_request(t_options *options)
     printf("Send failed: %s\n", strerror(errno));
     return 1;
   }
+  options->ping++;
 
   return 0;
 }
