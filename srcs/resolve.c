@@ -3,11 +3,11 @@
 #include "ft_ping/resolve.h"
 
 
-int ping_resolve(t_options *options)
+int ping_resolve(void)
 {
-  if (!inet_aton(options->target, &(options->addr)))
+  if (!inet_aton(g_options.target, &(g_options.addr)))
   {
-    print_error(options->target, "Name or service not known");
+    print_error(g_options.target, "Name or service not known");
     return 1;
   }
 

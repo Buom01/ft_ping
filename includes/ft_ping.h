@@ -31,6 +31,8 @@ typedef struct s_options
   float           rtt;
 } t_options;
 
+extern t_options g_options;
+
 typedef struct s_icmp_req
 {
   uint8_t   type;
@@ -51,6 +53,6 @@ typedef struct s_icmp_res
   char      data[568];
 } t_icmp_res;
 
-void ft_ping(t_options *options);
+void ft_ping(void);
 
 #endif

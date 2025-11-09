@@ -27,14 +27,14 @@ static uint16_t checksum(void *buff, size_t len)
   return (~sum);
 }
 
-static t_icmp_req icmp_request_packet(t_options *options)
+static t_icmp_req icmp_request_packet()
 {
   t_icmp_req packet = {
     8,
     0,
     0,
-    htons(options->id),
-    htons(options->sequence++)
+    htons(g_options.id),
+    htons(g_options.sequence++)
   };
   packet.checksum = checksum(&packet, sizeof(packet));
 
@@ -42,29 +42,29 @@ static t_icmp_req icmp_request_packet(t_options *options)
 }
 
 // manual used: socket, imcp(7), raw(7), ip(7), bind(2)
-int ping_request(t_options *options)
+int ping_request()
 {
   struct sockaddr_in sockaddr = {0};
   sockaddr.sin_family = AF_INET;
-  sockaddr.sin_addr = options->addr;
+  sockaddr.sin_addr = g_options.addr;
 
-  options->sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-  if (options->sockfd < 0)
+  g_options.sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+  if (g_options.sockfd < 0)
   {
     printf("Socket creation failed: %s\n", strerror(errno));
     return 1;
   }
 
-  t_icmp_req packet = icmp_request_packet(options);
+  t_icmp_req packet = icmp_request_packet();
 
-  gettimeofday(&options->ping_time, NULL);
+  gettimeofday(&g_options.send_time, NULL);
 
-  ssize_t sent = sendto(options->sockfd, &packet, sizeof(packet), 0, (struct sockaddr*)&sockaddr, sizeof(sockaddr));
+  ssize_t sent = sendto(g_options.sockfd, &packet, sizeof(packet), 0, (struct sockaddr*)&sockaddr, sizeof(sockaddr));
   if (sent < 0) {
     printf("Send failed: %s\n", strerror(errno));
     return 1;
   }
-  options->ping++;
+  g_options.ping++;
 
   return 0;
 }

@@ -27,13 +27,13 @@ static void print_result(t_options *options)
 }
 
 // manual used: socket, imcp(7), raw(7), ip(7), bind(2)
-int ping_response(t_options *options)
+int ping_response()
 {
   struct timeval tv_timeout;
   tv_timeout.tv_sec = 1;
   tv_timeout.tv_usec = 0;
 
-  setsockopt(options->sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv_timeout, sizeof(tv_timeout));
+  setsockopt(g_options.sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv_timeout, sizeof(tv_timeout));
 
   t_icmp_res res = {0};
 
@@ -41,7 +41,7 @@ int ping_response(t_options *options)
   socklen_t addr_len = sizeof(recv_addr);
   bzero(&recv_addr, sizeof(recv_addr));
   
-  ssize_t ret = recvfrom(options->sockfd, &res, sizeof(res), 0, (struct sockaddr*)&recv_addr, &addr_len);
+  ssize_t ret = recvfrom(g_options.sockfd, &res, sizeof(res), 0, (struct sockaddr*)&recv_addr, &addr_len);
 
   if (ret < 0)
   {
@@ -65,11 +65,10 @@ int ping_response(t_options *options)
   struct timeval recv_time;
   gettimeofday(&recv_time, NULL);
 
-  unsigned long usec_diff = (recv_time.tv_sec - options->send_time.tv_sec) * 1000000 + (recv_time.tv_usec - options->send_time.tv_usec);
-  options->rtt = usec_diff / 1000.0;
+  unsigned long usec_diff = (recv_time.tv_sec - g_options.send_time.tv_sec) * 1000000 + (recv_time.tv_usec - g_options.send_time.tv_usec);
+  g_options.rtt = usec_diff / 1000.0;
 
-  options->pong++;
-  print_result(options);
-
+  g_options.pong++;
+  print_result(&g_options);
   return 0;
 }
