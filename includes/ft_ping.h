@@ -10,7 +10,7 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
-#include <netinet/ip_icmp.h>
+# include <netinet/ip_icmp.h>
 
 # define BINARY "ft_ping"
 # define ICMP_ID 42
@@ -21,13 +21,15 @@ typedef struct s_options
   bool            verbose;
   bool            help;
   char            *target;
-  struct in_addr  addr;
+  struct sockaddr_in sockaddr;
   uint16_t        id;
   uint16_t        sequence;
+  t_timeval       start_time;
   int             sockfd;
   int             ping;
   int             pong;
-  struct timeval  send_time;
+  t_timeval       send_time;
+  t_timeval       response_time;
   float           rtt;
 } t_options;
 

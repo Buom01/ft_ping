@@ -46,22 +46,11 @@ static t_icmp_req get_ping_request()
 // manual used: socket, imcp(7), raw(7), ip(7), bind(2)
 int ping_request()
 {
-  struct sockaddr_in sockaddr = {0};
-  sockaddr.sin_family = AF_INET;
-  sockaddr.sin_addr = g_options.addr;
-
-  g_options.sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
-  if (g_options.sockfd < 0)
-  {
-    printf("Socket creation failed: %s\n", strerror(errno));
-    return 1;
-  }
-
   t_icmp_req packet = get_ping_request();
 
   g_options.send_time = get_time();
 
-  ssize_t sent = sendto(g_options.sockfd, &packet, sizeof(packet), 0, (struct sockaddr*)&sockaddr, sizeof(sockaddr));
+  ssize_t sent = sendto(g_options.sockfd, &packet, sizeof(packet), 0, (struct sockaddr*)&g_options.sockaddr, sizeof(g_options.sockaddr));
   if (sent < 0) {
     printf("Send failed: %s\n", strerror(errno));
     return 1;
@@ -74,7 +63,7 @@ int ping_request()
 int ping_handle_response()
 {
   t_timeval tv_timeout;
-  tv_timeout.tv_sec = 1;
+  tv_timeout.tv_sec = 2;
   tv_timeout.tv_usec = 0;
 
   setsockopt(g_options.sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv_timeout, sizeof(tv_timeout));
@@ -106,7 +95,8 @@ int ping_handle_response()
     return -1;
   }
 
-  g_options.rtt = get_time_diff(g_options.send_time, get_time());
+  g_options.response_time = get_time();
+  g_options.rtt = get_time_diff(g_options.send_time, g_options.response_time);
   g_options.pong++;
 
   return 0;

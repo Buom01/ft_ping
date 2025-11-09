@@ -5,7 +5,8 @@
 
 int ping_resolve(void)
 {
-  if (!inet_aton(g_options.target, &(g_options.addr)))
+  g_options.sockaddr.sin_family = AF_INET;
+  if (!inet_aton(g_options.target, &(g_options.sockaddr.sin_addr)))
   {
     print_error(g_options.target, "Name or service not known");
     return 1;

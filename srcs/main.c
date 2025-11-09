@@ -2,6 +2,7 @@
 #include "ft_ping/resolve.h"
 #include "ft_ping/icmp.h"
 #include "ft_ping/messages.h"
+#include "ft_ping/utils.h"
 
 
 t_options g_options;
@@ -15,9 +16,10 @@ rtt min/avg/max/mdev = 0.009/0.022/0.057/0.014 ms
   */
   float loss = ((float)(g_options.ping - g_options.pong) / g_options.ping) * 100.0;
 
+  // https://serverfault.com/questions/999595/what-does-the-time-field-indicate-in-ping-statistics
   printf("\n");
   printf("--- %s ping statistics ---\n", g_options.target);
-  printf("%i packets transmitted, %i received, %f%% packet loss, time ___TODO___ ms\n", g_options.ping, g_options.pong, loss);
+  printf("%i packets transmitted, %i received, %0.f%% packet loss, time %.0fms\n", g_options.ping, g_options.pong, loss, get_time_diff(g_options.start_time, g_options.response_time));
   exit(1);
 }
 
@@ -28,6 +30,16 @@ static void handle_details()
   signal(SIGQUIT, handle_details);
 }
 
+static void open_socket()
+{
+  g_options.sockfd = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP);
+  if (g_options.sockfd < 0)
+  {
+    perror("socket");
+    exit(1);
+  }
+}
+
 static void ft_ping()
 {
   signal(SIGINT, handle_stop);
@@ -36,21 +48,28 @@ static void ft_ping()
   if (ping_resolve() != 0)
     return ;
 
-  printf("PING %s (%s) %i(%i) bytes of data.\n", g_options.target, inet_ntoa(g_options.addr), 56, 84);
+  printf("PING %s (%s) %i(%i) bytes of data.\n", g_options.target, inet_ntoa(g_options.sockaddr.sin_addr), 56, 84);
   g_options.id = getpid();
+  g_options.start_time = get_time();
 
-  int res = 0;
-  while (res == 0)
+  open_socket();
+
+  int req = 0, res = 0;
+  while (req == 0 && res == 0)
   {
-    ping_request();
-    while ((res = ping_handle_response()) == 1)
-      ;
+    if ((req = ping_request()) == 0)
+    {
+      while ((res = ping_handle_response()) == 1)
+        ;
+    }
     if (res == 0)
     {
       print_req_result();
       sleep(1);
     }
   }
+
+  close(g_options.sockfd);
 }
 
 int main(int argc, char **argv)

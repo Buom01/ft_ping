@@ -46,7 +46,7 @@ void print_req_result()
   printf(
     "%d bytes from %s: icmp_seq=%d ttl=64 time=",
     64,  // FIXME: Hardcoded size
-    inet_ntoa(g_options.addr),
+    inet_ntoa(g_options.sockaddr.sin_addr),
     g_options.sequence
   );
   printf(format, msec);
