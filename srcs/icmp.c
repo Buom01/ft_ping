@@ -150,8 +150,8 @@ int ping_handle_response()
   {
     if (errno == EINTR)
       return 1; // Interrupted by signal, try again
-    if (errno == EAGAIN || errno == EWOULDBLOCK)
-      return 1;
+    if (errno == EWOULDBLOCK || errno == EAGAIN)
+      return 4;  // Timeout
     perror(BINARY);
     return 2;
   }
@@ -165,11 +165,29 @@ int ping_handle_response()
     char addr_str[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &recv_addr.sin_addr, addr_str, INET_ADDRSTRLEN);
     
-    printf("%ld bytes from %s: %s\n", 
-           ret,
-           addr_str,
-           get_icmp_type_name(res.type, res.code));
-    return 1;
+    printf(
+      "%ld bytes from %s: %s\n", 
+      ret - sizeof(res.ip_hdr),
+      addr_str,
+      get_icmp_type_name(res.type, res.code)
+    );
+
+    if (g_options.verbose)
+    {
+      // the original IP header is in payload ICMP error messages
+      struct iphdr *orig_ip_hdr = (struct iphdr *)res.data;
+
+      printf("IP Hdr Dump:\n ");
+      for(int i = 0; i < 20; i++)
+      {
+        printf("%02x", *((uint8_t *)orig_ip_hdr + i));
+        if (i % 2 == 1)
+          printf(" ");
+      }
+      printf("\n");
+    }
+
+    return 3;  // Don't print normal response
   }
 
   g_options.packet_size = ret - sizeof(res.ip_hdr);

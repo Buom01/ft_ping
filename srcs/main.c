@@ -75,8 +75,11 @@ static void ft_ping()
 
   open_socket();
 
+  if (g_options.timeout == 0)
+    g_options.timeout = 1000;
+
   int req = 0, res = 0;
-  while (req == 0 && (res == 0 || res == 2))
+  while (req == 0 && (res == 0 || res == 2 || res == 3 || res == 4))
   {
     if (g_options.timeout > 0)  // Would be updated according to TTL
       use_timeout(g_options.timeout);
@@ -88,9 +91,12 @@ static void ft_ping()
     }
     if (res == 0)
       print_req_result();
-    struct timespec ts = {1, 0}, rem;
-    while (nanosleep(&ts, &rem) == -1 && errno == EINTR)
-      ts = rem;
+    if (res != 4)
+    {
+      struct timespec ts = {1, 0}, rem;
+      while (nanosleep(&ts, &rem) == -1 && errno == EINTR)
+        ts = rem;
+    }
   }
 
   close(g_options.sockfd);
