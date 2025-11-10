@@ -9,8 +9,10 @@ int print_usage()
   printf("\n");
   printf("Options :\n");
   printf("  <destination>      DNS name or IP address\n");
-  printf("  -v                 verbose output\n");
   printf("  -?                 show this help\n");
+  printf("  -n                 no reverse DNS name resolution\n");
+  printf("  -v                 verbose output\n");
+  printf("  -W <timeout>       time to wait for response\n");
 
   return 0;
 }
@@ -43,15 +45,15 @@ void print_req_result()
   else
       format = "%.0f";
 
-  printf("%d bytes from ", 64);  // FIXME: Hardcoded size
+  printf("%d bytes from ", g_options.packet_size);
   if (g_options.hostname[0] != '\0')
     printf("%s (%s)", g_options.hostname, inet_ntoa(g_options.sockaddr.sin_addr));
   else
     printf("%s", inet_ntoa(g_options.sockaddr.sin_addr));
 
   printf(
-    ": icmp_seq=%d ttl=64 time=",
-    g_options.sequence
+    ": icmp_seq=%d ttl=%d time=",
+    g_options.sequence, g_options.ttl
   );
   printf(format, msec);
   printf(" ms\n");

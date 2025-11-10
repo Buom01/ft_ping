@@ -55,16 +55,14 @@ static void handle_details()
   signal(SIGQUIT, handle_details);
 }
 
-/*
 static void use_timeout(int timeout)
 {
   t_timeval tv_timeout;
-  tv_timeout.tv_sec = timeout;
-  tv_timeout.tv_usec = 0;
+  tv_timeout.tv_sec = timeout / 1000;
+  tv_timeout.tv_usec = (timeout % 1000) * 1000;
 
   setsockopt(g_options.sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv_timeout, sizeof(tv_timeout));
 }
-*/
 
 static void open_socket()
 {
@@ -84,7 +82,12 @@ static void ft_ping()
   if (ping_resolve() != 0)
     return ;
 
-  printf("PING %s (%s) %i(%i) bytes of data.\n", g_options.target, inet_ntoa(g_options.sockaddr.sin_addr), 56, 84);
+  // https://askubuntu.com/questions/1255418/ping-command-packet-size
+  printf(
+    "PING %s (%s) %lu(%lu) bytes of data.\n",
+    g_options.target, inet_ntoa(g_options.sockaddr.sin_addr),
+    sizeof(((t_icmp_req *)0)->data), sizeof(t_icmp_req) + sizeof(struct iphdr)
+  );
   g_options.id = getpid();
   g_options.start_time = get_time();
 
@@ -93,6 +96,9 @@ static void ft_ping()
   int req = 0, res = 0;
   while (req == 0 && res == 0)
   {
+    if (g_options.timeout > 0)  // Would be updated according to TTL
+      use_timeout(g_options.timeout);
+
     if ((req = ping_request()) == 0)
     {
       while ((res = ping_handle_response()) == 1)
@@ -111,6 +117,14 @@ static void ft_ping()
   close(g_options.sockfd);
 }
 
+static char*  get_next_arg(int argc, char **argv, int *i)
+{
+  if (*i + 1 >= argc)
+    return NULL;
+  (*i)++;
+  return argv[*i];
+}
+
 int main(int argc, char **argv)
 {
   bzero(&g_options, sizeof(g_options));
@@ -123,6 +137,15 @@ int main(int argc, char **argv)
       g_options.verbose = true;
     else if (strcmp(argv[i], "-?") == 0)
       g_options.help = true;
+    else if (strcmp(argv[i], "-n") == 0)
+      g_options.no_rev_dns = true;
+    else if (strcmp(argv[i], "-W") == 0)
+    {
+      char *arg = get_next_arg(argc, argv, &i);
+      if (!arg)
+        return print_usage_error("Option -W requires an argument");
+      g_options.timeout = atoi(arg) * 1000;
+    }
   }
 
   if (g_options.help)

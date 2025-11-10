@@ -36,7 +36,8 @@ static t_icmp_req get_ping_request()
     0,
     0,
     htons(g_options.id),
-    htons(g_options.sequence++)
+    htons(g_options.sequence++),
+    {0}
   };
   packet.checksum = checksum(&packet, sizeof(packet));
 
@@ -113,6 +114,9 @@ int ping_handle_response()
     return -1;
   }
 
+  g_options.packet_size = ret - sizeof(res.ip_hdr);
+  g_options.ttl = res.ip_hdr.ttl;
+  g_options.timeout = g_options.ttl * 2;
   g_options.response_time = get_time();
   update_rtt_stats();
   g_options.pong++;

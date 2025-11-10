@@ -23,6 +23,8 @@ typedef struct s_options
   bool            verbose;
   bool            help;
   char            *target;
+  bool            no_rev_dns;
+  int             timeout;
   char            hostname[257];
   struct sockaddr_in sockaddr;
   uint16_t        id;
@@ -33,6 +35,8 @@ typedef struct s_options
   int             pong;
   t_timeval       send_time;
   t_timeval       response_time;
+  int             ttl;
+  int             packet_size;
   float           rtt;
   float           rtt_min;
   float           rtt_max;
@@ -50,11 +54,12 @@ typedef struct s_icmp_req
   uint16_t  checksum;
   uint16_t	id;
   uint16_t	sequence;
+  uint8_t  data[56];
 } t_icmp_req;
 
 typedef struct s_icmp_res
 {
-  char      ip_hdr[20];  // IP header size without options
+  struct iphdr ip_hdr;
   uint8_t   type;
   uint8_t   code;
   uint16_t  checksum;

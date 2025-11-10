@@ -7,6 +7,9 @@ static int resolve_reverse_ip(struct in_addr *addr)
 {
   struct hostent *host;
 
+  if (g_options.no_rev_dns)
+    return 0;
+
   host = gethostbyaddr((const void *)addr, sizeof(*addr), AF_INET);
   if (host && host->h_name)
   {
