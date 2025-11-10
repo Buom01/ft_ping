@@ -29,12 +29,12 @@ typedef struct s_options
   struct sockaddr_in sockaddr;
   uint16_t        id;
   uint16_t        sequence;
-  t_timeval       start_time;
   int             sockfd;
   int             ping;
   int             pong;
   t_timeval       send_time;
   t_timeval       response_time;
+  int             response_seq;
   int             ttl;
   int             packet_size;
   float           rtt;

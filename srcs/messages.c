@@ -3,32 +3,42 @@
 
 int print_usage()
 {
+  printf("Usage: %s [OPTION...] HOST ...\n", BINARY);
+  printf("Send ICMP ECHO_REQUEST packets to network hosts.\n");
   printf("\n");
-  printf("Usage\n");
-  printf("  %s [options] <destination>\n", BINARY);
+  printf(" Options valid for all request types:\n");
   printf("\n");
-  printf("Options :\n");
-  printf("  <destination>      DNS name or IP address\n");
-  printf("  -?                 show this help\n");
-  printf("  -n                 no reverse DNS name resolution\n");
-  printf("  -v                 verbose output\n");
-  printf("  -W <timeout>       time to wait for response\n");
+  printf("  -n, --numeric              do not resolve host addresses\n");
+  printf("  -v, --verbose              verbose output\n");
+  printf("  -w, --timeout=N            stop after N seconds\n");
+  printf("\n");
+  printf(" Options valid for --echo requests:\n");
+  printf("\n");
+  printf("  -?, --help                 give this help list\n");
+  printf("\n");
+  printf("Mandatory or optional arguments to long options are also mandatory or optional\n");
+  printf("for any corresponding short options.\n");
 
   return 0;
 }
 
-int print_error(const char *what, const char *reason)
+int print_usage_tip()
 {
-  printf("%s: %s: %s\n", BINARY, what, reason);
-
-  return 0;
+  printf("Try '%s --help' for more information.\n", BINARY);
+  return 1;
 }
 
-int print_usage_error(const char *reason)
+int print_error(const char *reason)
 {
-  print_error("usage error", reason);
+  printf("%s: %s\n", BINARY, reason);
+  return 1;
+}
 
-  return 0;
+int print_usage_error(const char *reason, const char *arg)
+{
+  printf("%s: %s '%s'\n", BINARY, reason, arg);
+  print_usage_tip();
+  return 1;
 }
 
 void print_req_result()
@@ -46,14 +56,11 @@ void print_req_result()
       format = "%.0f";
 
   printf("%d bytes from ", g_options.packet_size);
-  if (g_options.hostname[0] != '\0')
-    printf("%s (%s)", g_options.hostname, inet_ntoa(g_options.sockaddr.sin_addr));
-  else
-    printf("%s", inet_ntoa(g_options.sockaddr.sin_addr));
+  printf("%s", inet_ntoa(g_options.sockaddr.sin_addr));
 
   printf(
     ": icmp_seq=%d ttl=%d time=",
-    g_options.sequence, g_options.ttl
+    g_options.response_seq, g_options.ttl
   );
   printf(format, msec);
   printf(" ms\n");

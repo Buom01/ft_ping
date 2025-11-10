@@ -4,6 +4,55 @@
 #include "ft_ping/icmp.h"
 #include "ft_ping/messages.h"
 
+// Get ICMP type description for verbose output
+static const char* get_icmp_type_name(uint8_t type, uint8_t code)
+{
+  switch (type)
+  {
+    case ICMP_ECHOREPLY:
+      return "Echo Reply";
+    case ICMP_DEST_UNREACH:
+      switch (code)
+      {
+        case ICMP_NET_UNREACH: return "Destination Net Unreachable";
+        case ICMP_HOST_UNREACH: return "Destination Host Unreachable";
+        case ICMP_PROT_UNREACH: return "Destination Protocol Unreachable";
+        case ICMP_PORT_UNREACH: return "Destination Port Unreachable";
+        case ICMP_FRAG_NEEDED: return "Frag needed and DF set";
+        case ICMP_SR_FAILED: return "Source Route Failed";
+        default: return "Dest Unreachable";
+      }
+    case ICMP_SOURCE_QUENCH:
+      return "Source Quench";
+    case ICMP_REDIRECT:
+      return "Redirect";
+    case ICMP_ECHO:
+      return "Echo Request";
+    case ICMP_TIME_EXCEEDED:
+      if (code == ICMP_EXC_TTL)
+        return "Time to live exceeded";
+      else if (code == ICMP_EXC_FRAGTIME)
+        return "Frag reassembly time exceeded";
+      return "Time Exceeded";
+    case ICMP_PARAMETERPROB:
+      return "Parameter Problem";
+    case ICMP_TIMESTAMP:
+      return "Timestamp Request";
+    case ICMP_TIMESTAMPREPLY:
+      return "Timestamp Reply";
+    case ICMP_INFO_REQUEST:
+      return "Information Request";
+    case ICMP_INFO_REPLY:
+      return "Information Reply";
+    case ICMP_ADDRESS:
+      return "Address Mask Request";
+    case ICMP_ADDRESSREPLY:
+      return "Address Mask Reply";
+    default:
+      return "Unknown ICMP";
+  }
+}
+
 // Adapted from https://datatracker.ietf.org/doc/html/rfc1071#section-4.1
 static uint16_t checksum(void *buff, size_t len)
 {
@@ -36,10 +85,12 @@ static t_icmp_req get_ping_request()
     0,
     0,
     htons(g_options.id),
-    htons(g_options.sequence++),
+    htons(g_options.sequence),
     {0}
   };
   packet.checksum = checksum(&packet, sizeof(packet));
+
+  g_options.sequence++;
 
   return packet;
 }
@@ -97,24 +148,32 @@ int ping_handle_response()
 
   if (ret < 0)
   {
+    if (errno == EINTR)
+      return 1; // Interrupted by signal, try again
     if (errno == EAGAIN || errno == EWOULDBLOCK)
-    {
-      printf("Request timed out.\n");
-      return -1;
-    }
+      return 1;
     perror(BINARY);
-    return -1;
+    return 2;
   }
 
-  if (res.type == 8)
-    return 1; // Ignore (our) echo requests
-  else if (res.type != 0)
+   // Ignore echo requests from ourselves
+  if (res.type == 8 && ntohs(res.identifier) == g_options.id)
+    return 1;
+    
+  if (res.type != 0) // Not an echo reply
   {
-    printf("Unexpected ICMP packet received.\n");
-    return -1;
+    char addr_str[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &recv_addr.sin_addr, addr_str, INET_ADDRSTRLEN);
+    
+    printf("%ld bytes from %s: %s\n", 
+           ret,
+           addr_str,
+           get_icmp_type_name(res.type, res.code));
+    return 1;
   }
 
   g_options.packet_size = ret - sizeof(res.ip_hdr);
+  g_options.response_seq = ntohs(res.sequence);
   g_options.ttl = res.ip_hdr.ttl;
   g_options.timeout = g_options.ttl * 2;
   g_options.response_time = get_time();
