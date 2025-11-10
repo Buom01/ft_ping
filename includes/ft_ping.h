@@ -21,6 +21,7 @@ typedef struct s_options
   bool            verbose;
   bool            help;
   char            *target;
+  char            hostname[257];
   struct sockaddr_in sockaddr;
   uint16_t        id;
   uint16_t        sequence;

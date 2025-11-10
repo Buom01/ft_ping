@@ -62,12 +62,6 @@ int ping_request()
 
 int ping_handle_response()
 {
-  t_timeval tv_timeout;
-  tv_timeout.tv_sec = 2;
-  tv_timeout.tv_usec = 0;
-
-  setsockopt(g_options.sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv_timeout, sizeof(tv_timeout));
-
   t_icmp_res res = {0};
 
   struct sockaddr_in recv_addr;

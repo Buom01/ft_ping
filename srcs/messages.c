@@ -36,17 +36,21 @@ void print_req_result()
 
   if (msec < 0.1)
       format = "%.3f";
-  else if (msec < 1)
-      format = "%.2f";
   else if (msec < 10)
+      format = "%.2f";
+  else if (msec < 100)
       format = "%.1f";
   else
       format = "%.0f";
 
+  printf("%d bytes from ", 64);  // FIXME: Hardcoded size
+  if (g_options.hostname[0] != '\0')
+    printf("%s (%s)", g_options.hostname, inet_ntoa(g_options.sockaddr.sin_addr));
+  else
+    printf("%s", inet_ntoa(g_options.sockaddr.sin_addr));
+
   printf(
-    "%d bytes from %s: icmp_seq=%d ttl=64 time=",
-    64,  // FIXME: Hardcoded size
-    inet_ntoa(g_options.sockaddr.sin_addr),
+    ": icmp_seq=%d ttl=64 time=",
     g_options.sequence
   );
   printf(format, msec);
