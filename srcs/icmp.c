@@ -70,6 +70,7 @@ static void update_rtt_stats()
     g_options.rtt_max = rtt;
     g_options.rtt_sum = rtt;
     g_options.rtt_sum_squares = rtt * rtt;
+    g_options.rtt_ewma = rtt;
   }
   else
   {
@@ -78,7 +79,8 @@ static void update_rtt_stats()
     else if (rtt > g_options.rtt_max)
       g_options.rtt_max = rtt;
     g_options.rtt_sum += rtt;
-    g_options.rtt_sum_squares += rtt * rtt;
+    g_options.rtt_sum_squares += rtt * rtt;  // For standard deviation calculation
+    g_options.rtt_ewma = (rtt * EWMA_ALPHA) + (g_options.rtt_ewma * (1 - EWMA_ALPHA));  // https://corporatefinanceinstitute.com/resources/career-map/sell-side/capital-markets/exponentially-weighted-moving-average-ewma/
   }
 }
 

@@ -39,8 +39,19 @@ static void handle_stop()
 
 static void handle_details()
 {
-  //"12/12 paquets, 0 % perdus, min/moy/mmpe/max = 10.867/11.476/11.405/13.364 ms"
-  printf("SIGQUIT\n");
+  if (g_options.pong > 0)
+  {
+    float loss = ((float)(g_options.ping - g_options.pong) / g_options.ping) * 100.0;
+    float avg = g_options.rtt_sum / g_options.pong;
+
+    // Using "\r" to overwrite the terminal echo of SIGQUIT (Ctrl+\)
+    printf(
+      "\r%i/%i packets, %.0f%% loss, min/avg/ewma/max = %.3f/%.3f/%.3f/%.3f ms\n",
+      g_options.pong, g_options.ping, loss,
+      g_options.rtt_min, avg, g_options.rtt_ewma, g_options.rtt_max
+    );
+  }
+
   signal(SIGQUIT, handle_details);
 }
 
@@ -90,7 +101,10 @@ static void ft_ping()
     if (res == 0)
     {
       print_req_result();
-      sleep(1);
+
+      struct timespec ts = {1, 0}, rem;
+      while (nanosleep(&ts, &rem) == -1 && errno == EINTR)
+        ts = rem;
     }
   }
 

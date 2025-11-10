@@ -9,7 +9,9 @@
 # include <netinet/ip.h>
 # include <netinet/ip_icmp.h>
 # include <arpa/inet.h>
-    
+
+# define EWMA_ALPHA 0.125f
+
 int ping_request(void);
 int ping_handle_response(void);
 
