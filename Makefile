@@ -10,6 +10,7 @@ SRCS		:=	srcs/main.c \
 
 OBJS		:=	$(SRCS:.c=.o)
 CFLAGS		?=	-Wall -Werror -Wextra -g3
+LIBS		:=	-lm
 INCLUDES	:=	-I includes
 
 # Colors
@@ -22,7 +23,7 @@ PREFIX		:= $(MAGENTA)$(NAME)$(RESET) =>
 
 $(NAME): $(OBJS)
 	@echo "$(PREFIX)$(GREEN)Building executable $(RESET)$(NAME)"
-	@$(CC) $(CFLAGS) $(OBJS) -o $@
+	@$(CC) $(CFLAGS) $(OBJS) $(LIBS) -o $@
 
 %.o: %.c
 	@echo "$(PREFIX)$(GREEN)Compiling file $(RESET)$< $(BLUE)to $(RESET)$@"

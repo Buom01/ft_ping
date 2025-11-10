@@ -60,6 +60,28 @@ int ping_request()
   return 0;
 }
 
+static void update_rtt_stats()
+{
+  float rtt = g_options.rtt = get_time_diff(g_options.send_time, g_options.response_time);
+
+  if (g_options.pong == 0)
+  {
+    g_options.rtt_min = rtt;
+    g_options.rtt_max = rtt;
+    g_options.rtt_sum = rtt;
+    g_options.rtt_sum_squares = rtt * rtt;
+  }
+  else
+  {
+    if (rtt < g_options.rtt_min)
+      g_options.rtt_min = rtt;
+    else if (rtt > g_options.rtt_max)
+      g_options.rtt_max = rtt;
+    g_options.rtt_sum += rtt;
+    g_options.rtt_sum_squares += rtt * rtt;
+  }
+}
+
 int ping_handle_response()
 {
   t_icmp_res res = {0};
@@ -82,7 +104,7 @@ int ping_handle_response()
   }
 
   if (res.type == 8)
-    return 1; // Ignore Echo Requests
+    return 1; // Ignore (our) echo requests
   else if (res.type != 0)
   {
     printf("Unexpected ICMP packet received.\n");
@@ -90,7 +112,7 @@ int ping_handle_response()
   }
 
   g_options.response_time = get_time();
-  g_options.rtt = get_time_diff(g_options.send_time, g_options.response_time);
+  update_rtt_stats();
   g_options.pong++;
 
   return 0;

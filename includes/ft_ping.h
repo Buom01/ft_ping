@@ -11,6 +11,7 @@
 # include <netinet/in.h>
 # include <arpa/inet.h>
 # include <netinet/ip_icmp.h>
+# include <math.h>
 
 # define BINARY "ft_ping"
 # define ICMP_ID 42
@@ -32,6 +33,10 @@ typedef struct s_options
   t_timeval       send_time;
   t_timeval       response_time;
   float           rtt;
+  float           rtt_min;
+  float           rtt_max;
+  float           rtt_sum;
+  float           rtt_sum_squares;
 } t_options;
 
 extern t_options g_options;

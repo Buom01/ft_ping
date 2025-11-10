@@ -7,21 +7,33 @@
 
 t_options g_options;
 
+// inutils2-ping is (sometimes) buggy on the total time elapsed :
+// https://github.com/iputils/iputils/issues/193#issuecomment-508861630 and
+// https://serverfault.com/questions/999595/what-does-the-time-field-indicate-in-ping-statistics
 static void handle_stop()
 {
-  /*
---- 127.0.0.1 ping statistics ---
-12 packets transmitted, 12 received, 0% packet loss, time 11242ms
-rtt min/avg/max/mdev = 0.009/0.022/0.057/0.014 ms
-  */
   float loss = ((float)(g_options.ping - g_options.pong) / g_options.ping) * 100.0;
 
-  // inutils2-ping is buggy on the total time elapsed
-  // https://github.com/iputils/iputils/issues/193#issuecomment-508861630
-  // Also : https://serverfault.com/questions/999595/what-does-the-time-field-indicate-in-ping-statistics
   printf("\n");
   printf("--- %s ping statistics ---\n", g_options.hostname[0] ? g_options.hostname : g_options.target);
-  printf("%i packets transmitted, %i received, %0.f%% packet loss, time %.0fms\n", g_options.ping, g_options.pong, loss, get_time_diff(g_options.start_time, g_options.response_time));
+  printf(
+    "%i packets transmitted, %i received, %0.f%% packet loss, time %.0fms\n",
+    g_options.ping, g_options.pong, loss, get_time_diff(g_options.start_time, g_options.response_time)
+  );
+
+  if (g_options.pong > 0)
+  {
+    // mdev is the mean standard deviation (fr: écart type) of the round-trip times
+    // Formula : https://fr.wikipedia.org/wiki/%C3%89cart_type#D%C3%A9finition
+    float avg = g_options.rtt_sum / g_options.pong;
+    float variance = (g_options.rtt_sum_squares / g_options.pong) - (avg * avg);
+    float mdev = variance > 0 ? sqrtf(variance) : 0;
+
+    printf(
+      "rtt min/avg/max/mdev = %.3f/%.3f/%.3f/%.3f ms\n",
+      g_options.rtt_min, avg, g_options.rtt_max, mdev
+    );
+  }
   exit(1);
 }
 
