@@ -211,6 +211,22 @@ int ping_handle_response()
         src_str,
         dst_str
       );
+
+      // Original ICMP echo request
+      uint8_t *orig_icmp_start = (uint8_t *)(res.data + (orig_ip_hdr->ihl * 4));  // After the IP header
+
+      // Use raw pointer as casting to my struct caused me trouble with alignment/padding
+      uint8_t orig_type = orig_icmp_start[0];
+      uint8_t orig_code = orig_icmp_start[1];
+      uint16_t orig_id = ntohs(*((uint16_t *)(orig_icmp_start + 4)));
+      uint16_t orig_seq = ntohs(*((uint16_t *)(orig_icmp_start + 6)));
+      printf("ICMP: type %u, code %u, size %u, id 0x%04x, seq 0x%04x\n",
+        orig_type,
+        orig_code,
+        ntohs(orig_ip_hdr->tot_len) - (orig_ip_hdr->ihl * 4),  // Total length minus IP header size
+        orig_id,
+        orig_seq
+      );
     }
 
     return 3;  // Don't print normal response
