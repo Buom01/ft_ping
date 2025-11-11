@@ -177,6 +177,7 @@ int ping_handle_response()
       // the original IP header is in payload ICMP error messages
       struct iphdr *orig_ip_hdr = (struct iphdr *)res.data;
 
+      // original IP header dump
       printf("IP Hdr Dump:\n ");
       for(int i = 0; i < 20; i++)
       {
@@ -185,6 +186,31 @@ int ping_handle_response()
           printf(" ");
       }
       printf("\n");
+
+      // IP header fields
+      printf("Vr HL TOS  Len   ID Flg  off TTL Pro  cks      Src\tDst\tData\n");
+      char src_str[INET_ADDRSTRLEN];
+      char dst_str[INET_ADDRSTRLEN];
+      struct in_addr src_addr, dst_addr;
+      src_addr.s_addr = orig_ip_hdr->saddr;
+      dst_addr.s_addr = orig_ip_hdr->daddr;
+      inet_ntop(AF_INET, &src_addr, src_str, INET_ADDRSTRLEN);
+      inet_ntop(AF_INET, &dst_addr, dst_str, INET_ADDRSTRLEN);
+
+      printf(" %1x  %1x  %02x %04x %04x   %1x %04x  %02x  %02x %04x %s  %s\n",
+        orig_ip_hdr->version,
+        orig_ip_hdr->ihl,
+        orig_ip_hdr->tos,                            // Type of Service
+        ntohs(orig_ip_hdr->tot_len),
+        ntohs(orig_ip_hdr->id),
+        (ntohs(orig_ip_hdr->frag_off) >> 13) & 0x7,  // Flags (3 bits)
+        ntohs(orig_ip_hdr->frag_off) & 0x1FFF,       // Offset (13 bits)
+        orig_ip_hdr->ttl,
+        orig_ip_hdr->protocol,
+        ntohs(orig_ip_hdr->check),
+        src_str,
+        dst_str
+      );
     }
 
     return 3;  // Don't print normal response
