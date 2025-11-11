@@ -24,44 +24,26 @@ int print_usage()
 
 int print_usage_tip()
 {
-  printf("Try '%s --help' for more information.\n", BINARY);
+  fprintf(stderr, "Try '%s --help' for more information.\n", BINARY);
   return 1;
 }
 
 int print_error(const char *reason)
 {
-  printf("%s: %s\n", BINARY, reason);
+  fprintf(stderr, "%s: %s\n", BINARY, reason);
   return 1;
 }
 
 int print_usage_error(const char *reason, const char *arg)
 {
-  printf("%s: %s '%s'\n", BINARY, reason, arg);
+  fprintf(stderr, "%s: %s '%s'\n", BINARY, reason, arg);
   print_usage_tip();
   return 1;
 }
 
 void print_req_result()
 {
-  const char *format;
-  float msec = g_options.rtt;
-
-  if (msec < 0.1)
-      format = "%.3f";
-  else if (msec < 10)
-      format = "%.2f";
-  else if (msec < 100)
-      format = "%.1f";
-  else
-      format = "%.0f";
-
-  printf("%d bytes from ", g_options.packet_size);
-  printf("%s", inet_ntoa(g_options.sockaddr.sin_addr));
-
-  printf(
-    ": icmp_seq=%d ttl=%d time=",
-    g_options.response_seq, g_options.ttl
-  );
-  printf(format, msec);
-  printf(" ms\n");
+  printf("%d bytes from %s", g_options.packet_size, inet_ntoa(g_options.sockaddr.sin_addr));
+  printf(": icmp_seq=%d ttl=%d time=", g_options.response_seq, g_options.ttl);
+  printf("%0.3f ms\n", g_options.rtt);
 }
