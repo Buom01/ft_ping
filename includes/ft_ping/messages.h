@@ -5,6 +5,7 @@
 # include <arpa/inet.h>
 
 int     print_usage();
+int     print_usage_tip();
 int     print_error(const char *reason);
 int     print_usage_error(const char *reason, const char *arg);
 void    print_req_result();

@@ -146,7 +146,10 @@ int main(int argc, char **argv)
     return print_usage();
 
   if (!g_options.target)
-    return print_error("missing host operand");
+  {
+    print_error("missing host operand");
+    return print_usage_tip();
+  }
 
   ft_ping();
 
