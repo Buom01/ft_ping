@@ -232,6 +232,9 @@ int ping_handle_response()
     return 3;  // Don't print normal response
   }
 
+  if (res.identifier != htons(g_options.id))
+    return 1;
+
   g_options.packet_size = ret - sizeof(res.ip_hdr);
   g_options.response_seq = ntohs(res.sequence);
   g_options.ttl = res.ip_hdr.ttl;
