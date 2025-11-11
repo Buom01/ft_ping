@@ -9,6 +9,7 @@ t_timeval get_time()
 
 float get_time_diff(t_timeval start, t_timeval end)
 {
-  unsigned long usec_diff = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec);
-  return usec_diff / 1000.0;  
+  t_timeval diff;
+  timersub(&end, &start, &diff);
+  return (diff.tv_sec * 1000.0) + (diff.tv_usec / 1000.0);
 }

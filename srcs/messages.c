@@ -44,6 +44,6 @@ int print_usage_error(const char *reason, const char *arg)
 void print_req_result()
 {
   printf("%d bytes from %s", g_options.packet_size, inet_ntoa(g_options.sockaddr.sin_addr));
-  printf(": icmp_seq=%d ttl=%d time=", g_options.response_seq, g_options.ttl);
-  printf("%0.3f ms\n", g_options.rtt);
+  printf(": icmp_seq=%d ttl=%d", g_options.response_seq, g_options.ttl);
+  printf(" time=%0.3f ms\n", g_options.rtt);
 }
