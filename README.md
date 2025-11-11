@@ -3,10 +3,12 @@
 This project is about recoding the ping command.
 
 ## What's done ?
-- Initializing the project only
+- All
+- Bonuses: `--timeout` & `--numeric`
 
 ## Compile
 `make`
 
 ## Attention point
 Must be run into a VM
+Must copy inetutils2's ping (and not system's default)
