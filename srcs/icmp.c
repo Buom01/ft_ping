@@ -235,10 +235,13 @@ int ping_handle_response()
   if (res.identifier != htons(g_options.id))
     return 1;
 
+  uint16_t recv_seq = ntohs(res.sequence);
+  if (recv_seq != (uint16_t)(g_options.sequence - 1))
+    return 1;
+
   g_options.packet_size = ret - sizeof(res.ip_hdr);
-  g_options.response_seq = ntohs(res.sequence);
+  g_options.response_seq = recv_seq;
   g_options.ttl = res.ip_hdr.ttl;
-  g_options.timeout = g_options.ttl * 2;
   g_options.response_time = get_time();
   update_rtt_stats();
   g_options.pong++;

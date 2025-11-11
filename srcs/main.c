@@ -78,11 +78,11 @@ static void ft_ping()
   if (g_options.timeout == 0)
     g_options.timeout = 1000;
 
+  use_timeout(g_options.timeout);
+
   int req = 0, res = 0;
   while (req == 0 && (res == 0 || res == 2 || res == 3 || res == 4))
   {
-    if (g_options.timeout > 0)  // Would be updated according to TTL
-      use_timeout(g_options.timeout);
 
     if ((req = ping_request()) == 0)
     {
