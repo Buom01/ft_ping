@@ -23,7 +23,6 @@ typedef struct s_options
   bool            verbose;
   bool            help;
   char            *target;
-  bool            no_rev_dns;
   int             timeout;
   char            hostname[257];
   struct sockaddr_in sockaddr;

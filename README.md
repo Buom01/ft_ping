@@ -4,7 +4,7 @@ This project is about recoding the ping command.
 
 ## What's done ?
 - All
-- Bonuses: `--timeout` & `--numeric`
+- Bonuses: `--timeout` (without concurrency) & Round-Trip-Time line
 
 ## Compile
 `make`

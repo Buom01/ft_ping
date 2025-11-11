@@ -122,8 +122,6 @@ int main(int argc, char **argv)
       g_options.verbose = true;
     else if (strcmp(argv[i], "-?") == 0 || strcmp(argv[i], "--help") == 0)
       g_options.help = true;
-    else if (strcmp(argv[i], "-n") == 0 || strcmp(argv[i], "--numeric") == 0)
-      g_options.no_rev_dns = true;
     else if (strcmp(argv[i], "-W") == 0)
     {
       char *arg = get_next_arg(argc, argv, &i);
