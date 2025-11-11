@@ -13,4 +13,4 @@ ping "${@:2}" > ping.txt &
 sleep $1
 pkill --signal SIGINT ping
 
-diff -u ping.txt ft_ping.txt
+diff -s -u ping.txt ft_ping.txt
