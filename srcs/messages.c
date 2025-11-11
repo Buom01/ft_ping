@@ -22,7 +22,7 @@ int print_usage()
   return 0;
 }
 
-int print_usage_tip()
+static int print_usage_tip()
 {
   fprintf(stderr, "Try '%s --help' for more information.\n", BINARY);
   return 1;
@@ -31,6 +31,7 @@ int print_usage_tip()
 int print_error(const char *reason)
 {
   fprintf(stderr, "%s: %s\n", BINARY, reason);
+  print_usage_tip();
   return 1;
 }
 
